@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storyboard Builder — Draw. Import. Layer. Present.</title>
+<meta name="description" content="A fast, simple Mac app to build and present storyboards. Built by a working director for commercial directors and content creators.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #c8211f;
+    --red-light: #e84340;
+    --bg: #0e0c0a;
+    --bg2: #161310;
+    --bg3: #1e1a16;
+    --warm: #f5ede0;
+    --warm-muted: #9e8e7e;
+    --warm-dim: #4a3f34;
+    --gold: #c9963a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--bg);
+    color: var(--warm);
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 2.5rem;
+    background: rgba(14, 12, 10, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(245,237,224,0.07);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+
+  .nav-logo-mark {
+    width: 36px; height: 36px;
+    background: var(--red);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+    padding: 5px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .nav-logo-mark span {
+    display: block;
+    background: white;
+    border-radius: 1px;
+  }
+
+  .nav-logo-mark span:nth-child(2),
+  .nav-logo-mark span:nth-child(3) {
+    background: var(--red);
+  }
+
+  .nav-logo-text {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.05em;
+    color: var(--warm);
+    text-transform: uppercase;
+  }
+
+  .nav-cta {
+    background: var(--red);
+    color: white;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.4rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--red-light); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 2.5rem 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(3.2rem, 7vw, 6.5rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--warm);
+    margin-bottom: 1.5rem;
+    max-width: 820px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: var(--warm-muted);
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--red);
+    color: white;
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-primary:hover { background: var(--red-light); transform: translateY(-1px); }
+
+  .btn-secondary {
+    color: var(--warm-muted);
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    text-decoration: none;
+    border-bottom: 1px solid var(--warm-dim);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-secondary:hover { color: var(--warm); border-color: var(--warm-muted); }
+
+  .hero-note {
+    font-size: 13px;
+    color: var(--warm-dim);
+    margin-top: 1rem;
+    font-weight: 300;
+  }
+
+  /* ── SCREENSHOT ── */
+  .screenshot-wrap {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2.5rem 6rem;
+  }
+
+  .screenshot-frame {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(245,237,224,0.1);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    background: var(--bg3);
+    aspect-ratio: 16/10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .screenshot-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .screenshot-placeholder {
+    text-align: center;
+    color: var(--warm-dim);
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  .screenshot-placeholder p {
+    margin-top: 0.5rem;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--warm-dim), transparent);
+    max-width: 1100px;
+    margin: 0 auto 6rem;
+    opacity: 0.3;
+  }
+
+  /* ── TAGLINE BAR ── */
+  .tagline-bar {
+    text-align: center;
+    padding: 4rem 2.5rem 6rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .tagline-bar h2 {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--warm);
+    line-height: 1.4;
+    max-width: 700px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .tagline-bar p {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--warm-muted);
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  /* ── FEATURES ── */
+  .features {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2.5rem 8rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2px;
+    background: rgba(245,237,224,0.05);
+    border: 1px solid rgba(245,237,224,0.05);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .feature-card {
+    background: var(--bg2);
+    padding: 2.5rem 2rem;
+    transition: background 0.2s;
+  }
+  .feature-card:hover { background: var(--bg3); }
+
+  .feature-icon {
+    width: 36px; height: 36px;
+    margin-bottom: 1.2rem;
+    color: var(--red);
+    opacity: 0.9;
+  }
+
+  .feature-card h3 {
+    font-family: 'Cormorant', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--warm);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.01em;
+  }
+
+  .feature-card p {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--warm-muted);
+    line-height: 1.7;
+  }
+
+  /* ── QUOTE ── */
+  .quote-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 2.5rem 8rem;
+    text-align: center;
+  }
+
+  .quote-section blockquote {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--warm);
+    line-height: 1.4;
+    max-width: 780px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+
+  .quote-section blockquote::before {
+    content: '\201C';
+    color: var(--red);
+    font-size: 4rem;
+    line-height: 0;
+    vertical-align: -0.6rem;
+    margin-right: 0.2rem;
+    font-style: normal;
+  }
+
+  .quote-attr {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-dim);
+  }
+
+  /* ── SECOND SCREENSHOT ── */
+  .split-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2.5rem 8rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .split-text h2 {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--warm);
+    margin-bottom: 1rem;
+  }
+
+  .split-text p {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--warm-muted);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  .split-screenshot {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(245,237,224,0.1);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.5);
+    aspect-ratio: 4/3;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .split-screenshot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    background: var(--bg2);
+    border-top: 1px solid rgba(245,237,224,0.07);
+    border-bottom: 1px solid rgba(245,237,224,0.07);
+    padding: 7rem 2.5rem;
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 600;
+    color: var(--warm);
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+  }
+
+  .cta-section p {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--warm-muted);
+    max-width: 440px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .cta-note {
+    font-size: 13px;
+    color: var(--warm-dim);
+    margin-top: 1.2rem;
+    font-weight: 300;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-brand {
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--warm-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-brand a {
+    color: var(--warm-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-brand a:hover { color: var(--warm-muted); }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    nav { padding: 1rem 1.5rem; }
+    .hero { padding: 100px 1.5rem 60px; }
+    .screenshot-wrap { padding: 0 1.5rem 4rem; }
+    .features { padding: 0 1.5rem 5rem; }
+    .split-section { grid-template-columns: 1fr; padding: 0 1.5rem 5rem; gap: 2rem; }
+    .split-text { order: 2; }
+    .split-screenshot { order: 1; }
+    .quote-section { padding: 0 1.5rem 5rem; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <span class="nav-logo-text">Storyboard Builder</span>
+  </a>
+  <a href="#download" class="nav-cta">Download for Mac</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">by Film Construction</p>
+  <h1>Draw. Import.<br><em>Layer. Present.</em></h1>
+  <p class="hero-sub">A fast, simple way to build and present your storyboard — without the clutter of most tools. Built by a working director, for directors.</p>
+  <div class="hero-actions">
+    <a href="#download" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v9M8 10l-3-3M8 10l3-3M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Download Free
+    </a>
+    <a href="#features" class="btn-secondary">See how it works</a>
+  </div>
+  <p class="hero-note">macOS only &nbsp;·&nbsp; Free while in beta</p>
+</section>
+
+<!-- HERO SCREENSHOT -->
+<div class="screenshot-wrap reveal">
+  <div class="screenshot-frame">
+    <!-- Replace src with your actual screenshot filename once added to the repo -->
+    <img src="screenshot-main.png" alt="Storyboard Builder app showing panel with layered drawing" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+    <div class="screenshot-placeholder" style="display:none; flex-direction:column; align-items:center; padding:2rem;">
+      <p>[ Add screenshot-main.png to repo ]</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- TAGLINE -->
+<div class="tagline-bar reveal">
+  <h2>Built by a working director,<br>for commercial directors and content creators who need to get ideas across.</h2>
+  <p>Shape your vision, share it with clients and crew — without rebuilding it in Keynote first.</p>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-grid">
+
+    <div class="feature-card reveal">
+      <svg class="feature-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 30 Q12 10 18 18 Q24 26 30 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="6" cy="30" r="2" fill="currentColor"/>
+        <circle cx="30" cy="6" r="2" fill="currentColor"/>
+      </svg>
+      <h3>Drawing tools that work</h3>
+      <p>Pencil, brush, marker, line — responsive and built for real use. Vector-based layers let you refine without starting over.</p>
+    </div>
+
+    <div class="feature-card reveal">
+      <svg class="feature-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="4" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="19" y="4" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="4" y="19" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="19" y="19" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <h3>Import from anywhere</h3>
+      <p>Bring in artwork from Procreate, Fresco, or anywhere else. Assemble your boards without the usual clunky workflow.</p>
+    </div>
+
+    <div class="feature-card reveal">
+      <svg class="feature-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="8" width="28" height="4" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="4" y="16" width="28" height="4" rx="2" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+        <rect x="4" y="24" width="28" height="4" rx="2" stroke="currentColor" stroke-width="2" opacity="0.35"/>
+      </svg>
+      <h3>Layers per panel</h3>
+      <p>Each panel works in layers. Sketch on one, refine on another, add reference on a third. Merge when you're done.</p>
+    </div>
+
+    <div class="feature-card reveal">
+      <svg class="feature-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="5" width="30" height="22" rx="3" stroke="currentColor" stroke-width="2"/>
+        <path d="M14 27v4M22 27v4M10 31h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M11 16l5 4 9-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h3>Present without rebuilding</h3>
+      <p>Full-screen presentation mode built right in. No jumping to Keynote, PowerPoint, or Slides. Your boards, clean and immediate.</p>
+    </div>
+
+    <div class="feature-card reveal">
+      <svg class="feature-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="8" width="17" height="20" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="15" y="12" width="17" height="20" rx="2" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+        <path d="M8 16h9M8 20h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h3>References per shot</h3>
+      <p>Attach up to six reference images per panel — locations, wardrobe, lighting, mood. Everything connected to the shot, in one place.</p>
+    </div>
+
+    <div class="feature-card reveal">
+      <svg class="feature-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 9h24M6 18h24M6 27h24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="10" cy="9" r="3" fill="currentColor"/>
+        <circle cx="18" cy="18" r="3" fill="currentColor"/>
+        <circle cx="26" cy="27" r="3" fill="currentColor"/>
+      </svg>
+      <h3>Export cleanly</h3>
+      <p>Export to PDF in multiple layouts, ready to share with clients or crew. Or export individual frames. Both just work.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section reveal">
+  <blockquote>Built by a working director, for commercial directors and content creators who need to shape ideas and get them in front of clients and collaborators.</blockquote>
+  <p class="quote-attr">Perry Bradley &nbsp;·&nbsp; Director, Film Construction</p>
+</section>
+
+<!-- SPLIT: PRESENTATION MODE -->
+<section class="split-section">
+  <div class="split-text reveal">
+    <h2>Present directly from the app</h2>
+    <p>Clean, full-screen presentation mode. No exporting, no rebuilding in another tool, no last-minute formatting panics.</p>
+    <p>Add notes to every panel. Include your reference images. Walk a client through a spot frame by frame — exactly the way you intended it.</p>
+  </div>
+  <div class="split-screenshot reveal">
+    <img src="screenshot-present.png" alt="Storyboard Builder presentation mode" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+    <div class="screenshot-placeholder" style="display:none; flex-direction:column; align-items:center; padding:2rem; color: #4a3f34;">
+      <p style="font-size:12px; text-transform:uppercase; letter-spacing:0.15em;">[ Add screenshot-present.png ]</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="download">
+  <h2>Start boarding.</h2>
+  <p>Free to download while in beta. macOS only. No account needed.</p>
+  <a href="StoryboardBuilder.dmg" class="btn-primary" style="font-size:16px; padding:1rem 2.5rem;">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v9M8 10l-3-3M8 10l3-3M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Download for Mac — Free
+  </a>
+  <p class="cta-note">Requires macOS 12 or later &nbsp;·&nbsp; Works on Apple Silicon and Intel</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-brand">Storyboard Builder by <a href="https://filmconstruction.com" target="_blank">Film Construction</a></p>
+  <p class="footer-brand">Auckland, New Zealand</p>
+</footer>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => io.observe(r));
+</script>
+
+</body>
+</html>
